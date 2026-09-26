@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Núcleo do Sistema</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #ff1f5b;
+      --secondary: #00f0ff;
+      --bg-dark: #06060c;
+      --panel-bg: rgba(10, 10, 20, 0.75);
+      --border-glow: rgba(255, 31, 91, 0.3);
+    }
+
+    body {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      overflow: hidden;
+      transition: background 1.2s ease;
+      isolation: isolate;
+    }
+
+    #bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+      filter: brightness(0.6) contrast(1.1);
+    }
+
+    #bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(6, 6, 12, 0.4), rgba(255, 31, 91, 0.08));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: -1;
+      pointer-events: none;
+      transition: all 1.5s ease;
+    }
+
+    body.started #bg-overlay {
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      background: linear-gradient(135deg, rgba(6, 6, 12, 0.6), rgba(0, 240, 255, 0.03));
+    }
+
+    /* Tela inicial Cyber-Premium */
+    #start-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 31, 91, 0.4);
+      box-shadow: 0 0 40px rgba(255, 31, 91, 0.25), inset 0 0 20px rgba(255, 31, 91, 0.1);
+      border-radius: 28px;
+      padding: 40px;
+      animation: glowBox 3s ease-in-out infinite alternate;
+      position: relative;
+      z-index: 10;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 85%;
+      max-width: 380px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .start-image {
+      width: 220px;
+      max-width: 100%;
+      height: 220px;
+      border-radius: 20px;
+      object-fit: cover;
+      margin-bottom: 24px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    }
+
+    @keyframes glowBox {
+      0% {
+        box-shadow: 0 0 30px rgba(255, 31, 91, 0.2), inset 0 0 15px rgba(255, 31, 91, 0.1);
+        transform: translateY(0) scale(1);
+      }
+
+      100% {
+        box-shadow: 0 0 50px rgba(255, 31, 91, 0.4), inset 0 0 25px rgba(255, 31, 91, 0.2);
+        transform: translateY(-4px) scale(1.01);
+      }
+    }
+
+    #start-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px;
+      color: #ffffff;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    #start-btn {
+      background: linear-gradient(90deg, var(--primary), #ff5e84);
+      border: none;
+      color: #ffffff;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255, 31, 91, 0.4);
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    #start-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px var(--primary);
+    }
+
+    /* CONTADOR DE TEMPO JUNTOS */
+    #timer-container {
+      position: fixed;
+      top: 24px;
+      background: rgba(10, 10, 20, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 12px 28px;
+      border-radius: 50px;
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+      z-index: 90;
+      display: none;
+      letter-spacing: 1px;
+      max-width: 90%;
+    }
+
+    #timer-live {
+      color: var(--secondary);
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+    }
+
+    body.started #timer-container {
+      display: block;
+      animation: pulseNeon 4s infinite alternate;
+    }
+
+    @keyframes pulseNeon {
+      0% {
+        border-color: rgba(0, 240, 255, 0.3);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+      }
+
+      100% {
+        border-color: rgba(255, 31, 91, 0.4);
+        box-shadow: 0 0 20px rgba(255, 31, 91, 0.15);
+      }
+    }
+
+    /* Elementos Flutuantes */
+    .falling-text {
+      position: fixed;
+      top: 0;
+      font-family: 'Mali', cursive;
+      white-space: nowrap;
+      color: #ffffff;
+      text-shadow: 0 0 10px var(--primary), 0 0 20px rgba(255, 255, 255, 0.3);
+      transform: translate3d(0, -12vh, 0);
+      will-change: transform, opacity;
+      animation: fall linear forwards;
+      user-select: none;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .falling-image {
+      position: fixed;
+      top: 0;
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 15px rgba(255, 31, 91, 0.5);
+      transform: translate3d(0, -15vh, 0);
+      will-change: transform, opacity;
+      animation: fall linear forwards;
+      user-select: none;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translate3d(0, -15vh, 0) rotate(0deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate3d(0, 110vh, 0) rotate(25deg);
+        opacity: 0;
+      }
+    }
+
+    /* Mini Player de Música Sci-Fi - SEMPRE FIXO */
+    #music-player-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 10px 16px;
+      border-radius: 30px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+      z-index: 100;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+    }
+
+    body.started #music-player-container {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .player-core {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .controls-and-time {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .buttons-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .player-expanded-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    }
+
+    #music-player-container:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 25px rgba(255, 31, 91, 0.25);
+    }
+
+    #music-player-container:hover .player-expanded-content {
+      max-width: 160px;
+      opacity: 1;
+    }
+
+    .control-btn-wrapper {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .progress-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(-90deg);
+    }
+
+    #play-pause-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+      box-shadow: 0 0 10px rgba(255, 31, 91, 0.4);
+      transition: background 0.3s;
+    }
+
+    #play-pause-btn:hover {
+      background: #ff477e;
+    }
+
+    .icon-play {
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-left: 9px solid white;
+      border-bottom: 5px solid transparent;
+      margin-left: 3px;
+    }
+
+    .icon-pause {
+      display: none;
+      gap: 3px;
+    }
+
+    .icon-pause div {
+      width: 3px;
+      height: 11px;
+      background: white;
+    }
+
+    #play-pause-btn.playing .icon-play {
+      display: none;
+    }
+
+    #play-pause-btn.playing .icon-pause {
+      display: flex;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #a0a0b0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    .audio-visualizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+      width: 16px;
+    }
+
+    .bar {
+      width: 2.5px;
+      height: 3px;
+      background-color: var(--secondary);
+      border-radius: 1px;
+    }
+
+    #play-pause-btn.playing~.audio-visualizer .bar {
+      animation: pulseBar 0.6s ease-in-out infinite alternate;
+    }
+
+    #play-pause-btn.playing~.audio-visualizer .bar:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    #play-pause-btn.playing~.audio-visualizer .bar:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    #play-pause-btn.playing~.audio-visualizer .bar:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    @keyframes pulseBar {
+      0% {
+        height: 3px;
+        filter: brightness(0.7);
+      }
+
+      100% {
+        height: 14px;
+        filter: brightness(1.2);
+        box-shadow: 0 0 8px var(--secondary);
+      }
+    }
+
+    .player-info-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .player-text {
+      color: #e2e2e9;
+      font-size: 12px;
+      font-weight: 600;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .player-time {
+      color: #a0a0b0;
+      font-size: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    /* ESTRUTURA GLOBAL DE TORRE (COMPUTADOR E CELULAR) */
+
+    /* 1. O Crisp nativo se estabelece na base (bottom: 20px / right: 20px) automaticamente */
+
+    /* 2. Balão de mensagem posicionado de forma fixa logo ACIMA do botão do Crisp */
+    #custom-tooltip-container {
+      position: fixed;
+      bottom: 85px;
+      right: 24px;
+      z-index: 139;
+      display: none;
+      pointer-events: none;
+    }
+
+    body.started #custom-tooltip-container {
+      display: block;
+    }
+
+    .chat-bubble-msg {
+      background: linear-gradient(135deg, var(--primary), #ff477e);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      font-family: 'Space Grotesk', sans-serif;
+      white-space: nowrap;
+      box-shadow: 0 5px 20px rgba(255, 31, 91, 0.4);
+      position: relative;
+      animation: fadeToggle 2.5s infinite ease-in-out;
+    }
+
+    .chat-bubble-msg::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      right: 22px;
+      border-width: 6px 6px 0 6px;
+      border-style: solid;
+      border-color: #ff477e transparent transparent transparent;
+    }
+
+    /* 3. Botão de abrir Galeria Premium posicionado de forma fixa logo ACIMA do balão de mensagem */
+    #gallery-open-btn {
+      position: fixed;
+      bottom: 135px;
+      /* Empilhado perfeitamente no topo */
+      right: 24px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 13px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 100;
+      display: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.5px;
+    }
+
+    body.started #gallery-open-btn {
+      display: block;
+    }
+
+    #gallery-open-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 25px rgba(255, 31, 91, 0.5);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeToggle {
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      30%,
+      70% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* CRISP INTEGRAÇÃO */
+    .crisp-client {
+      display: none !important;
+    }
+
+    body.started .crisp-client {
+      display: block !important;
+    }
+
+    .crisp-client [data-as-type="button"] {
+      background-color: var(--primary) !important;
+      box-shadow: 0 0 25px rgba(255, 31, 77, 0.6) !important;
+      border-radius: 50% !important;
+    }
+
+    .crisp-client [data-as-type="button"] svg {
+      display: none !important;
+    }
+
+    .crisp-client [data-as-type="button"]::after {
+      content: "💬" !important;
+      font-size: 22px !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .crisp-client [data-as-type="tooltip"],
+    .crisp-client .crisp-166w6v1,
+    .crisp-client .crisp-1hn766v {
+      display: none !important;
+    }
+
+    /* Pop-up da Galeria Holográfica */
+    #gallery-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 4, 8, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 200;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #gallery-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .gallery-container {
+      width: 92%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      background: rgba(15, 15, 25, 0.6);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.1);
+      border-radius: 32px;
+      padding: 30px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .gallery-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .gallery-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .gallery-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 31, 91, 0.3);
+      border-radius: 10px;
+    }
+
+    .gallery-title {
+      color: #fff;
+      text-align: center;
+      font-size: 26px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      margin-bottom: 25px;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 18px;
+    }
+
+    .gallery-item {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 16px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.05) translateY(-2px) !important;
+      border-color: var(--secondary);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+      z-index: 2;
+    }
+
+    #gallery-overlay.active .gallery-item {
+      animation: aparecerItem 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes aparecerItem {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .close-gallery {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .close-gallery:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: rotate(90deg);
+    }
+
+    /* REGRAS DE MEDIA EXCLUSIVAS DO MOBILE (AJUSTES DE MARGEM MENORES) */
+    @media (max-width: 600px) {
+      #timer-container {
+        font-size: 12px;
+        padding: 8px 16px;
+        top: 10px;
+      }
+
+      #music-player-container {
+        bottom: 12px;
+        left: 12px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        gap: 8px;
+        background: rgba(10, 10, 20, 0.9);
+      }
+
+      .audio-visualizer {
+        display: none !important;
+      }
+
+      .control-btn-wrapper {
+        width: 30px;
+        height: 30px;
+      }
+
+      #play-pause-btn {
+        width: 24px;
+        height: 24px;
+      }
+
+      .nav-btn {
+        font-size: 12px;
+      }
+
+      #music-player-container .player-expanded-content {
+        max-width: 90px;
+        opacity: 1;
+        gap: 4px;
+      }
+
+      .player-text {
+        font-size: 10px;
+      }
+
+      .player-time {
+        font-size: 9px;
+        white-space: nowrap;
+      }
+
+      /* Aproxima os botões da borda no Mobile */
+      #custom-tooltip-container {
+        right: 12px !important;
+      }
+
+      #gallery-open-btn {
+        right: 12px !important;
+        padding: 8px 14px !important;
+        font-size: 11px !important;
+      }
+
+      .chat-bubble-msg::after {
+        right: 18px !important;
+      }
+
+      /* FIX TOTAL DA GALERIA NO MOBILE */
+      #gallery-overlay {
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .gallery-container {
+        width: 100% !important;
+        max-width: 360px !important;
+        max-height: 80vh !important;
+        padding: 20px 12px !important;
+        border-radius: 20px !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+      }
+
+      .gallery-title {
+        font-size: 16px !important;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
+      }
+
+      .gallery-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .gallery-item {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+        object-fit: cover !important;
+        border-radius: 10px !important;
+        margin: 0 !important;
+        display: block !important;
+      }
+
+      .close-gallery {
+        top: 10px !important;
+        right: 10px !important;
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 18px !important;
+      }
+    }
+  </style>
+
+  <script type="text/javascript">
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "985829ab-7fe2-4e0b-9d4a-fb5084fb6f0e";
+    (function () {
+      var d = document; var s = d.createElement("script"); s.src = "https://client.crisp.chat/l.js"; s.async = 1;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+    window.$crisp.push(["on", "chat:opened", function () { document.getElementById('custom-tooltip-container').style.display = 'none'; }]);
+    window.$crisp.push(["on", "chat:closed", function () { if (document.body.classList.contains('started')) { document.getElementById('custom-tooltip-container').style.display = 'block'; } }]);
+  </script>
+</head>
+
+<body>
+
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source
+      src="https://github.com/Baque2005/Organizador/raw/refs/heads/master/From%20KlickPin%20CF%20Cute%20date%20night%20thoughts%20with%20easy%20charm%20designed%20for%20beautiful%20Pinterest%20saves%20for%20cozy%20hearts%20%F0%9F%92%96%20-%20Pin-1688918605802526.mp4"
+      type="video/mp4">
+  </video>
+
+  <div id="bg-overlay"></div>
+
+  <div id="timer-container">CONEXÃO ATIVA // <span id="timer-live">00d 00h 00m 00s</span> ❤</div>
+
+  <div id="start-screen">
+    <img class="start-image"
+      src="./FOTOS/TAYGATA.jpeg"
+      alt="Gatinho Fofo">
+    <div id="start-text">INICIALIZAR SISTEMA_(nome).exe</div>
+    <button id="start-btn">Acessar</button>
+  </div>
+
+  <div id="music-player-container">
+    <div class="player-core">
+      <div class="controls-and-time">
+        <div class="buttons-row">
+          <button id="prev-btn" class="nav-btn" title="Música anterior">⏮</button>
+
+          <div class="control-btn-wrapper">
+            <svg class="progress-ring" width="36" height="36">
+              <circle class="progress-ring__circle" stroke="#00f0ff" stroke-width="2" fill="transparent" r="16" cx="18"
+                cy="18" stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                style="transition: stroke-dashoffset 0.1s linear; transform-origin: 50% 50%; filter: drop-shadow(0 0 4px #00f0ff);" />
+            </svg>
+            <button id="play-pause-btn" aria-label="Play/Pause">
+              <div class="icon-play"></div>
+              <div class="icon-pause">
+                <div></div>
+                <div></div>
+              </div>
+            </button>
+          </div>
+
+          <button id="next-btn" class="nav-btn" title="Próxima música">⏭</button>
+        </div>
+        <div class="player-time" id="music-time-display">00:00 / 00:00</div>
+      </div>
+    </div>
+
+    <div class="player-expanded-content">
+      <div class="audio-visualizer">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+
+      <div class="player-info-block">
+        <div class="player-text" id="music-title">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+  <button id="gallery-open-btn">📸 ABRIR GALERIA</button>
+
+  <div id="gallery-overlay">
+    <div class="gallery-container">
+      <button class="close-gallery" id="gallery-close-btn">&times;</button>
+      <h2 class="gallery-title">Arquivos Guardados // Mais Linda do Mundo ✨</h2>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+  </div>
+
+  <div id="custom-tooltip-container">
+    <div class="chat-bubble-msg">Me manda uma mensagem! ❤</div>
+  </div>
+
+  <audio id="audio-player" preload="auto"></audio>
+
+  <script>
+    const startBtn = document.getElementById('start-btn');
+    const startScreen = document.getElementById('start-screen');
+    const audioPlayer = document.getElementById('audio-player');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const musicTitleText = document.getElementById('music-title');
+    const musicTimeDisplay = document.getElementById('music-time-display');
+    const circle = document.querySelector('.progress-ring__circle');
+    const galleryOpenBtn = document.getElementById('gallery-open-btn');
+    const galleryCloseBtn = document.getElementById('gallery-close-btn');
+    const galleryOverlay = document.getElementById('gallery-overlay');
+    const galleryGrid = document.getElementById('gallery-grid');
+
+    const radius = circle.r.baseVal.value;
+    const circumference = radius * 2 * Math.PI;
+    let isMusicInitialized = false;
+
+    const playlist = [
+      { title: "Cristiano Araújo - Caso Indefinido", url: "Cristiano Araújo - Caso Indefinido (In The Cities DVD) [Brazilian Music](MP3_160K).mp3", startTime: 0 },
+      { title: "Cuco - Piel", url: "Cuco - Piel Canela (Official Animated Video).mp3", startTime: 0 },
+      { title: "Di Paullo e Paulino - No céu dos braços teus", url: "Di Paullo e Paulino - No céu dos braços teus (El Condor Pasa)(MP3_160K).mp3", startTime: 0 },
+      { title: "Eu Amo Você", url: "Eu Amo Você(MP3_160K).mp3", startTime: 0 },
+      { title: "Eyedress _ Dent May - Something About You", url: "Eyedress _ Dent May - Something About You(MP3_160K).mp3", startTime: 0 },
+      { title: "uma carta/Henrique e Juliano - Flor E O Beija-Flor", url: "uma carta/Henrique e Juliano - Flor E O Beija-Flor part. Marília Mendonça - DVD Novas Histórias(MP3_160K).mp3", startTime: 0 },
+      { title: "Michael Jackson - Heaven Can Wait", url: "Michael Jackson - Heaven Can Wait (Official Audio)(MP3_160K).mp3", startTime: 0 },
+      { title: "New West - Those Eyes", url: "New West - Those Eyes (Chapter 1)(MP3_160K).mp3", startTime: 0 },
+      { title: "Steve Lacy - Dark Red", url: "Steve Lacy - Dark Red (Lyrics)(MP3_160K).mp3", startTime: 0 },
+      { title: "The Blaze - EYES", url: "The Blaze - EYES (Live Performance filmed by Blogothèque)(MP3_160K).mp3", startTime: 0 },
+      { title: "We Belong Together", url: "We Belong Together ( tradução _ legendado ) Ritchie Valens(MP3_160K)_1.mp3", startTime: 0 },
+      { title: "Aliança - Tribalistas", url: "Aliança - Tribalistas (clipe oficial)(MP3_160K).mp3", startTime: 0 },
+    ];
+
+    let currentSongIndex = 0;
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "00:00";
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function carregarMusica(index) {
+      const musica = playlist[index];
+      audioPlayer.src = musica.url;
+      musicTitleText.textContent = musica.title;
+      audioPlayer.currentTime = musica.startTime || 0;
+      atualizarTempoDisplay();
+    }
+    carregarMusica(currentSongIndex);
+
+    function proximaMusica() {
+      currentSongIndex = (currentSongIndex + 1) % playlist.length;
+      carregarMusica(currentSongIndex);
+      tocarAudioSeguro();
+    }
+
+    function musicaAnterior() {
+      currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+      carregarMusica(currentSongIndex);
+      tocarAudioSeguro();
+    }
+
+    function tocarAudioSeguro() {
+      audioPlayer.play()
+        .then(() => playPauseBtn.classList.add('playing'))
+        .catch(e => console.log("Interação requerida."));
+    }
+
+    function atualizarTempoDisplay() {
+      const atual = formatTime(audioPlayer.currentTime);
+      const total = formatTime(audioPlayer.duration || 0);
+      musicTimeDisplay.textContent = `${atual} / ${total}`;
+    }
+
+    audioPlayer.addEventListener('ended', proximaMusica);
+    audioPlayer.addEventListener('loadedmetadata', atualizarTempoDisplay);
+    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); proximaMusica(); });
+    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); musicaAnterior(); });
+
+    const dataDoNamoro = new Date(2025, 5, 12, 20, 0, 0);
+    function atualizarContador() {
+      const agora = new Date();
+      const diferenca = agora - dataDoNamoro;
+      const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+      document.getElementById('timer-live').textContent = `${dias}d ${horas}h ${minutes}m ${segundos}s`;
+    }
+    setInterval(atualizarContador, 1000);
+  //quantidade de foto de acordo com  as fotos
+    const fotosDaNamorada = ["./FOTO", "./FOTOS/"]
+    const fotosFofasGatinhos = [
+      "https://images.unsplash.com/photo-1574158622643-69d34d72650a?w=400&auto=format&fit=crop&q=80",
+      "https://tse4.mm.bing.net/th/id/OIP.6WcA9WQ27WXSlYseu7zYKgHaHa?w=1080&h=1080&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "https://i.pinimg.com/originals/62/df/6e/62df6e1e56bc1d887a8b23a5ae5621f6.png",
+      "https://tse1.explicit.bing.net/th/id/OIP.4cYPQZD5eqmURzylL8MHMgHaHa?pid=ImgDet&w=201&h=201&c=7&dpr=1,3&o=7&rm=3",
+      "https://i.pinimg.com/originals/be/84/3d/be843de5937b5ff73d1730f56351ff5a.jpg",
+      "https://i.pinimg.com/originals/9e/0d/be/9e0dbe5caa09a9012bf4cdb610456876.jpg",
+      "https://i.pinimg.com/originals/65/fe/02/65fe0214ded2728e3e234295c114c1a2.jpg?nii=t",
+    ];
+    // urls da internet
+
+    const todasAsFotosDaGaleria = [...fotosDaNamorada];
+    todasAsFotosDaGaleria.forEach((url, index) => {
+      const img = document.createElement('img');
+      img.src = url; img.className = 'gallery-item'; img.style.animationDelay = `${index * 0.04}s`;
+      img.addEventListener('click', () => window.open(url, '_blank'));
+      galleryGrid.appendChild(img);
+    });
+
+    circle.style.strokeDasharray = `${circumference} ${circumference}`;
+    circle.style.strokeDashoffset = circumference;
+    function setProgress(percent) {
+      circle.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+    }
+
+    function startEverything() {
+      if (!isMusicInitialized) { audioPlayer.volume = 0.7; isMusicInitialized = true; }
+      tocarAudioSeguro();
+      document.body.classList.add('started');
+      startScreen.style.display = 'none';
+      atualizarContador();
+    }
+
+    startBtn.addEventListener('click', () => { startEverything(); initSpecialEffects(); });
+    galleryOpenBtn.addEventListener('click', () => galleryOverlay.classList.add('active'));
+    galleryCloseBtn.addEventListener('click', () => galleryOverlay.classList.remove('active'));
+
+    playPauseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isMusicInitialized || startScreen.style.display !== 'none') { startEverything(); initSpecialEffects(); return; }
+      if (audioPlayer.paused) { audioPlayer.play(); playPauseBtn.classList.add('playing'); }
+      else { audioPlayer.pause(); playPauseBtn.classList.remove('playing'); }
+    });
+
+    audioPlayer.addEventListener('timeupdate', () => {
+      if (audioPlayer.duration) setProgress((audioPlayer.currentTime / audioPlayer.duration) * 100);
+      atualizarTempoDisplay();
+    });
+
+    let effectsStarted = false;
+    function initSpecialEffects() {
+      if (effectsStarted) return;
+      effectsStarted = true;
+
+      const starContainer = document.createElement("div");
+      Object.assign(starContainer.style, { position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", overflow: "hidden", zIndex: "-1", pointerEvents: "none" });
+      document.body.appendChild(starContainer);
+
+      for (let i = 0; i < 45; i++) {
+        const star = document.createElement("div");
+        const size = Math.random() * 2.5 + "px";
+        star.style.cssText = `position: absolute; width: ${size}; height: ${size}; border-radius: 50%; background: #00f0ff; opacity: 0; top: ${Math.random() * 100}vh; left: ${Math.random() * 100}vw; animation: starBlink ${1 + Math.random() * 2}s infinite; box-shadow: 0 0 8px #00f0ff;`;
+        starContainer.appendChild(star);
+      }
+
+      let activeFallingTexts = 0; const maxFallingTexts = 25;
+      const frases = ["Eu tee amoooo", "Você é minha vida", "😒😒", "❤", "❤️❤️"];
+      // declações em texto
+
+      setInterval(() => {
+        if (activeFallingTexts >= maxFallingTexts) return;
+        const randomChance = Math.random();
+        const leftPosition = Math.random() * 85 + "vw";
+        const duration = (4.0 + Math.random() * 2.0) + "s";
+        let fallingElement;
+
+        if (randomChance < 0.50 && fotosDaNamorada.length > 0) {
+          fallingElement = document.createElement("img");
+          fallingElement.className = "falling-image";
+          fallingElement.src = fotosDaNamorada[Math.floor(Math.random() * fotosDaNamorada.length)];
+          fallingElement.style.left = leftPosition;
+          fallingElement.style.animationDuration = duration;
+          fallingElement.onerror = function () {
+            this.src = fotosFofasGatinhos[0];
+          };
+        } else if (randomChance >= 0.50 && randomChance < 0.70 && fotosFofasGatinhos.length > 0) {
+          fallingElement = document.createElement("img");
+          fallingElement.className = "falling-image";
+          fallingElement.src = fotosFofasGatinhos[Math.floor(Math.random() * fotosFofasGatinhos.length)];
+          fallingElement.style.left = leftPosition;
+          fallingElement.style.animationDuration = duration;
+        } else {
+          fallingElement = document.createElement("span");
+          fallingElement.className = "falling-text";
+          fallingElement.textContent = frases[Math.floor(Math.random() * frases.length)];
+          fallingElement.style.left = leftPosition;
+          fallingElement.style.fontSize = (16 + Math.random() * 12) + "px";
+          fallingElement.style.animationDuration = duration;
+        }
+
+        activeFallingTexts++;
+        document.body.appendChild(fallingElement);
+
+        setTimeout(() => {
+          fallingElement.remove();
+          activeFallingTexts--;
+        }, parseFloat(duration) * 1000);
+      }, 600);
+    }
+  </script>
+</body>
+
+</html>
+<!-- Desenvolvido por Vitor Manoel, instagram uuvitu_ -->
