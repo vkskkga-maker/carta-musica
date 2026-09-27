@@ -837,7 +837,7 @@
 
   <div id="start-screen">
     <img class="start-image"
-      src="./FOTOS/TAYGATA.jpeg"
+      src="https://tse1.mm.bing.net/th/id/OIP.Q6KTXchzZJfOsHmLrxrU7QHaHR?r=0&w=1000&h=983&rs=1&pid=ImgDetMain&o=7&rm=3"
       alt="Gatinho Fofo">
     <div id="start-text">INICIALIZAR SISTEMA_(nome).exe</div>
     <button id="start-btn">Acessar</button>
@@ -980,7 +980,7 @@
     nextBtn.addEventListener('click', (e) => { e.stopPropagation(); proximaMusica(); });
     prevBtn.addEventListener('click', (e) => { e.stopPropagation(); musicaAnterior(); });
 
-    const dataDoNamoro = new Date(2025, 5, 12, 20, 0, 0);
+    const dataDoNamoro = new Date(2025, 5, 12, 20, 0, 0); // data do namoro de vocês
     function atualizarContador() {
       const agora = new Date();
       const diferenca = agora - dataDoNamoro;
@@ -991,20 +991,30 @@
       document.getElementById('timer-live').textContent = `${dias}d ${horas}h ${minutes}m ${segundos}s`;
     }
     setInterval(atualizarContador, 1000);
-  //quantidade de foto de acordo com  as fotos
-    const fotosDaNamorada = ["./FOTO", "./FOTOS/"]
+    //fotos da namorada
+    const fotosDaNamorada = []
+    // fotos de gatinhos fofos
     const fotosFofasGatinhos = [
-      "https://images.unsplash.com/photo-1574158622643-69d34d72650a?w=400&auto=format&fit=crop&q=80",
       "https://tse4.mm.bing.net/th/id/OIP.6WcA9WQ27WXSlYseu7zYKgHaHa?w=1080&h=1080&rs=1&pid=ImgDetMain&o=7&rm=3",
       "https://i.pinimg.com/originals/62/df/6e/62df6e1e56bc1d887a8b23a5ae5621f6.png",
       "https://tse1.explicit.bing.net/th/id/OIP.4cYPQZD5eqmURzylL8MHMgHaHa?pid=ImgDet&w=201&h=201&c=7&dpr=1,3&o=7&rm=3",
       "https://i.pinimg.com/originals/be/84/3d/be843de5937b5ff73d1730f56351ff5a.jpg",
       "https://i.pinimg.com/originals/9e/0d/be/9e0dbe5caa09a9012bf4cdb610456876.jpg",
       "https://i.pinimg.com/originals/65/fe/02/65fe0214ded2728e3e234295c114c1a2.jpg?nii=t",
+      "https://i.pinimg.com/originals/97/b8/63/97b863fe6e4a1d074dbd7c493feb9f1a.jpg?nii=t",
+      "https://i.pinimg.com/736x/64/46/b3/6446b3d1043464aab6ebb3778ad5b857.jpg",
+      "https://i.pinimg.com/originals/aa/01/39/aa01398f1b56a4c6e8211324f5289670.png",
+      "https://i.pinimg.com/originals/4b/19/27/4b19270f114aa1f3627cae7e33762fcf.jpg",
+      "https://i.pinimg.com/originals/a9/f5/63/a9f563e3d68748dc9a40f8e690cb32e4.jpg",
+      "https://i.pinimg.com/originals/f9/75/43/f97543caa786ed5c0e30c9328f761e8d.jpg?nii=t",
+      "https://i.pinimg.com/736x/96/d4/82/96d4826318c37da65bbfa21563bb2751.jpg",
+      "https://tse3.mm.bing.net/th/id/OIP.1ZbRWZ_XqZglE2qNDrBEEwHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "https://i.pinimg.com/474x/32/db/a1/32dba1dda903e364f5d699b9a9ba9004.jpg",
+      "https://i.pinimg.com/originals/7d/c7/4d/7dc74da7ccd30d80542206723b7b1254.jpg"
     ];
     // urls da internet
 
-    const todasAsFotosDaGaleria = [...fotosDaNamorada];
+    const todasAsFotosDaGaleria = [...fotosDaNamorada, ...fotosFofasGatinhos];
     todasAsFotosDaGaleria.forEach((url, index) => {
       const img = document.createElement('img');
       img.src = url; img.className = 'gallery-item'; img.style.animationDelay = `${index * 0.04}s`;
