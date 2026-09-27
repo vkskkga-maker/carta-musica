@@ -55,13 +55,6 @@ carta-musica/
 
 O projeto utiliza o **GitHub Pages** para disponibilizar a página na internet.
 
-As alterações podem ser publicadas através do Git:
-
-```bash
-git add .
-git commit -m "Atualização"
-git push
-```
 
 ##Autor **Vitor Manoel**
 
